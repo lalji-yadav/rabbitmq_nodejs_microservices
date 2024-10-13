@@ -9,35 +9,48 @@ const port = 3000
 
 app.get('/createUser', async (req, res) => {
 
-    // create user
-    const data = { name: 'Lalji' }
 
-    const conn = await amqplib.connect('amqp://localhost');
-    const ch1 = await conn.createChannel();
-    await ch1.assertQueue(queue);
+    try {
 
-    // Sender
-    const ch2 = await conn.createChannel();
+        // create user
+        const data = { name: 'Lalji' }
 
-    let datares = ch2.sendToQueue(queue, Buffer.from(JSON.stringify(data)));
+        const conn = await amqplib.connect('amqp://localhost');
+        const ch1 = await conn.createChannel();
+        await ch1.assertQueue(queue);
 
-    // setInterval(() => {
-    //     ch2.sendToQueue(queue, Buffer.from('something to do'));
-    // }, 1000);
+        // Sender
+        const ch2 = await conn.createChannel();
 
+        let datares = ch2.sendToQueue(queue, Buffer.from(JSON.stringify(data)));
 
-    console.log('data ---res>', datares)
+        console.log('data ---res>', datares)
 
-    // store in DB or send rabbitmq using queue
+        if(datares == true) {
 
-    // res.send(data).json()
+            console.error('processes in publishing message', datares);
+            res.send('processes in publishing message').json()
 
-    // apply some validations
+        }else {
 
+            console.error('Not process in publishing message', datares);
 
+        }
 
+        // store in DB or send rabbitmq using queue
+        // res.send(data).json()
+        // apply some validations
 
+    } catch (error) {
+
+        console.error('Error in publishing message', error);
+
+    }
+
+    
 })
+
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port producer aA11 app ${port}`)
